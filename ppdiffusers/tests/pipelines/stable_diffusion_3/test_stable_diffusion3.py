@@ -168,7 +168,6 @@ class StableDiffusion3PipelineFastTests(unittest.TestCase, PipelineTesterMixin):
         assert max_diff > 1e-2
 
     def test_stable_diffusion_3_prompt_embeds(self):
-        device = "cpu"
         pipe = self.pipeline_class(**self.get_dummy_components())
         pipe.set_progress_bar_config(disable=None)
         inputs = self.get_dummy_inputs()
@@ -189,7 +188,6 @@ class StableDiffusion3PipelineFastTests(unittest.TestCase, PipelineTesterMixin):
             prompt_2=None,
             prompt_3=None,
             do_classifier_free_guidance=do_classifier_free_guidance,
-            device="gpu",
         )
         output_with_embeds = pipe(
             prompt_embeds=prompt_embeds,
@@ -203,13 +201,12 @@ class StableDiffusion3PipelineFastTests(unittest.TestCase, PipelineTesterMixin):
         assert max_diff < 1e-4
 
     def test_fused_qkv_projections(self):
-        device = "cpu"  # ensure determinism for the device-dependent paddle.Generator
         components = self.get_dummy_components()
         pipe = self.pipeline_class(**components)
-        pipe = pipe.to(device)
+        # pipe = pipe.to()
         pipe.set_progress_bar_config(disable=None)
 
-        inputs = self.get_dummy_inputs(device)
+        inputs = self.get_dummy_inputs()
         image = pipe(**inputs).images
         original_image_slice = image[0, -3:, -3:, -1]
 
@@ -223,12 +220,12 @@ class StableDiffusion3PipelineFastTests(unittest.TestCase, PipelineTesterMixin):
             pipe.transformer, pipe.transformer.original_attn_processors
         ), "Something wrong with the attention processors concerning the fused QKV projections."
 
-        inputs = self.get_dummy_inputs(device)
+        inputs = self.get_dummy_inputs()
         image = pipe(**inputs).images
         image_slice_fused = image[0, -3:, -3:, -1]
 
         pipe.transformer.unfuse_qkv_projections()
-        inputs = self.get_dummy_inputs(device)
+        inputs = self.get_dummy_inputs()
         image = pipe(**inputs).images
         image_slice_disabled = image[0, -3:, -3:, -1]
 

@@ -142,6 +142,7 @@ class StableDiffusion3Img2ImgPipelineFastTests(PipelineLatentTesterMixin, unitte
         return inputs
 
     def test_stable_diffusion_3_img2img_different_prompts(self):
+        device = "cpu"
         pipe = self.pipeline_class(**self.get_dummy_components())
         pipe.set_progress_bar_config(disable=None)
 
@@ -159,6 +160,7 @@ class StableDiffusion3Img2ImgPipelineFastTests(PipelineLatentTesterMixin, unitte
         assert max_diff > 1e-2
 
     def test_stable_diffusion_3_img2img_different_negative_prompts(self):
+        device = "cpu"
         pipe = self.pipeline_class(**self.get_dummy_components())
         pipe.set_progress_bar_config(disable=None)
 
@@ -176,6 +178,7 @@ class StableDiffusion3Img2ImgPipelineFastTests(PipelineLatentTesterMixin, unitte
         assert max_diff > 1e-2
 
     def test_stable_diffusion_3_img2img_prompt_embeds(self):
+        device = "cpu"
         pipe = self.pipeline_class(**self.get_dummy_components())
         pipe.set_progress_bar_config(disable=None)
         inputs = self.get_dummy_inputs(device)
@@ -196,7 +199,6 @@ class StableDiffusion3Img2ImgPipelineFastTests(PipelineLatentTesterMixin, unitte
             prompt_2=None,
             prompt_3=None,
             do_classifier_free_guidance=do_classifier_free_guidance,
-            device=device,
         )
         output_with_embeds = pipe(
             prompt_embeds=prompt_embeds,
@@ -231,7 +233,7 @@ class StableDiffusion3Img2ImgPipelineSlowTests(unittest.TestCase):
 
     def get_inputs(self, dtype="float32", seed=0):
         init_image = load_image(
-            "https://paddlenlp.bj.bcebos.com/data/images/sketch-mountains-input.png""
+            "https://paddlenlp.bj.bcebos.com/data/images/sketch-mountains-input.png"
         )
         generator = paddle.Generator().manual_seed(seed)
 
